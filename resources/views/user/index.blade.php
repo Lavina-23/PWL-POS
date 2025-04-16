@@ -62,8 +62,9 @@
                 $('#myModal').modal('show');
             });
         }
+        var dataUser;
         $(document).ready(function() {
-            var dataUser = $('#table_user').DataTable({
+            dataUser = $('#table_user').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
