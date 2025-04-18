@@ -84,7 +84,7 @@ class UserController extends Controller
 
         // Filter data user berdasarkan level_id
         if ($request->level_id) {
-            $users->where('level_id', $request->level_id);
+            $users->where('m_user.level_id', $request->level_id);
         }
 
         return DataTables::of($users)
@@ -333,4 +333,49 @@ class UserController extends Controller
         }
         return redirect('/');
     }
+
+    public function confirm_ajax(string $id)
+    {
+        $user = UserModel::find($id);
+        return view('user.confirm_ajax', ['user' => $user]);
+    }
+
+    public function delete_ajax(Request $request, $id)
+    {
+        // cek apakah request dari ajax
+        if ($request->ajax() || $request->wantsJson()) {
+            $user = UserModel::find($id);
+
+            if ($user) {
+                $user->delete();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil dihapus'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data tidak ditemukan'
+                ]);
+            }
+        }
+        return redirect('/');
+    }
 }
+
+// NOTULEN
+// bocah kompak (rampal) dan rumbel jkjt (muharto)
+// kegiatannya baca buku bersama bocah2 + game
+// audiens = bocah2, pantek, volunteer dari luar poljar
+// tanggal = 18 mei 2025
+// partner = @dudukbaca, @bacabukumalang, @ejawantah
+// tempat = alun-alun (?)
+
+// YANG HARUS DITENTUKAN
+// partner
+// tempat
+// tema
+// anggaran (darimana duitnya)
+// konsumsi
+// mobilitas
+// merchandise

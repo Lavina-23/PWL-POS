@@ -1,11 +1,11 @@
 <form action="{{ url('/user/ajax') }}" method="POST" id="form-tambah">
     @csrf
-    <div id="modal-master" class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Tambah Data User</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-label="Close"><span>&times;</span></button>
             </div>
             <div class="modal-body">
                 {{-- Tempat untuk menampilkan pesan error umum dari server (opsional) --}}
@@ -77,16 +77,20 @@
                     data: $(form).serialize(),
                     success: function(response) {
                         if (response.status) {
-                            $('#modal-master').modal('hide'); // Perbaiki ID modal
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil',
-                                text: response.message
+                            $('#myModal').modal('hide'); // Mulai tutup modal
+                            $('#myModal').on('hidden.bs.modal', function() {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: response.message
+                                });
+                                if (typeof dataUser !== 'undefined' && dataUser
+                                    .ajax &&
+                                    typeof dataUser.ajax.reload === 'function'
+                                ) {
+                                    dataUser.ajax.reload();
+                                }
                             });
-                            if (typeof dataUser !== 'undefined' && dataUser.ajax &&
-                                typeof dataUser.ajax.reload === 'function') {
-                                dataUser.ajax.reload();
-                            }
                         } else {
                             $('.error-text').text('');
                             $.each(response.msgField, function(prefix, val) {
