@@ -1,9 +1,9 @@
-<form action="{{ url('/level/ajax') }}" method="POST" id="form-tambah">
+<form action="{{ url('/kategori/ajax') }}" method="POST" id="form-tambah">
     @csrf
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Tambah Data Level</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Tambah Data Kategori</h5>
                 <button type="button" class="close" data-dismiss="modal"
                     aria-label="Close"><span>&times;</span></button>
             </div>
@@ -13,16 +13,16 @@
                     <ul></ul>
                 </div> --}}
                 <div class="form-group">
-                    <label>Kode Level</label>
-                    <input value="" type="text" name="level_kode" id="level_kode" class="form-control"
+                    <label>Kode Kategori</label>
+                    <input value="" type="text" name="kategori_kode" id="kategori_kode" class="form-control"
                         required>
-                    <small id="error-level_kode" class="error-text form-text text-danger"></small>
+                    <small id="error-kategori_kode" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label>Nama Kode</label>
-                    <input value="" type="text" name="level_nama" id="level_nama" class="form-control"
+                    <label>Nama Kategori</label>
+                    <input value="" type="text" name="kategori_nama" id="kategori_nama" class="form-control"
                         required>
-                    <small id="error-level_nama" class="error-text form-text text-danger"></small>
+                    <small id="error-kategori_nama" class="error-text form-text text-danger"></small>
                 </div>
             </div>
             <div class="modal-footer">
@@ -37,11 +37,11 @@
     $(document).ready(function() {
         $("#form-tambah").validate({
             rules: {
-                level_kode: {
+                kategori_kode: {
                     required: true,
                     maxlength: 10
                 },
-                level_nama: {
+                kategori_nama: {
                     required: true,
                     maxlength: 100
                 },
@@ -60,12 +60,13 @@
                                     title: 'Berhasil',
                                     text: response.message
                                 });
-                                if (typeof tableLevel !== 'undefined' &&
-                                    tableLevel
+                                if (typeof tableKategori !== 'undefined' &&
+                                    tableKategori
                                     .ajax &&
-                                    typeof tableLevel.ajax.reload === 'function'
+                                    typeof tableKategori.ajax.reload ===
+                                    'function'
                                 ) {
-                                    tableLevel.ajax.reload();
+                                    tableKategori.ajax.reload();
                                 }
                             });
                         } else {
