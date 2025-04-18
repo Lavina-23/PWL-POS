@@ -48,6 +48,8 @@ Route::group(['prefix' => 'user'], function () {
     Route::put('/{id}', [UserController::class, 'update']); // menyimpan perubahan data user
     Route::get('/{id}/edit_ajax', [UserController::class, 'edit_ajax']); //menampilkan halaman form edit user ajax
     Route::put('/{id}/update_ajax', [UserController::class, 'update_ajax']); //menyimpan perubahan data user ajax
+    Route::get('/{id}/delete_ajax', [UserController::class, 'confirm_ajax']); //untuk menampilkan form confirm delete user ajax
+    Route::delete('/{id}/delete_ajax', [UserController::class, 'delete_ajax']); //menghapus data user ajax
     Route::delete('/{id}', [UserController::class, 'destroy']); // menghapus data user
 });
 
@@ -57,9 +59,15 @@ Route::group(['prefix' => 'level'], function () {
     Route::post('/list', [LevelController::class, 'list']); // Mengambil data level untuk DataTables
     Route::get('/create', [LevelController::class, 'create']); // Menampilkan form tambah level
     Route::post('/', [LevelController::class, 'store']); // Menyimpan data level baru
+    Route::get('/create_ajax', [LevelController::class, 'create_ajax']);
+    Route::post('/ajax', [LevelController::class, 'store_ajax']);
     Route::get('/{id}', [LevelController::class, 'show']); // Menampilkan detail level
     Route::get('/{id}/edit', [LevelController::class, 'edit']); // Menampilkan form edit level
     Route::put('/{id}', [LevelController::class, 'update']); // Menyimpan perubahan level
+    Route::get('/{id}/edit_ajax', [LevelController::class, 'edit_ajax']); //menampilkan halaman form edit user ajax
+    Route::put('/{id}/update_ajax', [LevelController::class, 'update_ajax']); //menyimpan perubahan data user ajax
+    Route::get('/{id}/delete_ajax', [LevelController::class, 'confirm_ajax']); //untuk menampilkan form confirm delete user ajax
+    Route::delete('/{id}/delete_ajax', [LevelController::class, 'delete_ajax']); //menghapus data user ajax
     Route::delete('/{id}', [LevelController::class, 'destroy']); // Menghapus level
 });
 
