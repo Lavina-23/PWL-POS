@@ -6,6 +6,9 @@
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
                 <a class="btn btn-sm btn-primary mt-1" href="{{ url('barang/create') }}">Tambah</a>
+                <button onclick="modalAction('{{ url('barang/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah
+                    Ajax</button>
+
             </div>
         </div>
         <div class="card-body">
@@ -48,6 +51,8 @@
             </table>
         </div>
     </div>
+    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
+        data-keyboard="false" data-width="75%" aria-hidden="true"></div>
 @endsection
 
 @push('css')
@@ -55,46 +60,80 @@
 
 @push('js')
     <script>
-        $(document).ready(function () {
-            var tableBarang = $('#table_barang').DataTable({
+        function modalAction(url = '') {
+            $('#myModal').load(url, function() {
+                $('#myModal').modal('show');
+            });
+        }
+        var tableBarang;
+        $(document).ready(function() {
+            tableBarang = $('#table_barang').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
                     url: "{{ url('barang/list') }}",
                     type: "POST",
-                    data: function (d) {
+                    data: function(d) {
                         d.kategori_id = $('#kategori_id').val(); // Filter berdasarkan kategori_id
                         d.barang_nama = $('#barang_nama').val(); // Filter berdasarkan nama barang
                         d._token = "{{ csrf_token() }}"; // Kirim CSRF token
                     }
                 },
-                columns: [
-                    { data: "DT_RowIndex", className: "text-center", orderable: false, searchable: false },
-                    { data: "barang_kode", orderable: true, searchable: true },
-                    { data: "barang_nama", orderable: true, searchable: true },
-                    { data: "kategori_nama", orderable: true, searchable: true },
-                    { data: "harga_beli_rp", orderable: true, searchable: false },
-                    { data: "harga_jual_rp", orderable: true, searchable: false },
-                    { data: "aksi", orderable: false, searchable: false }
+                columns: [{
+                        data: "DT_RowIndex",
+                        className: "text-center",
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: "barang_kode",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "barang_nama",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "kategori_nama",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "harga_beli_rp",
+                        orderable: true,
+                        searchable: false
+                    },
+                    {
+                        data: "harga_jual_rp",
+                        orderable: true,
+                        searchable: false
+                    },
+                    {
+                        data: "aksi",
+                        orderable: false,
+                        searchable: false
+                    }
                 ]
             });
 
             // Reload data ketika filter berubah
-            $('#kategori_id').on('change', function () {
+            $('#kategori_id').on('change', function() {
                 tableBarang.ajax.reload();
             });
-            
+
             // Reload data ketika user mengetik di input pencarian nama barang (dengan delay)
             let typingTimer;
-            $('#barang_nama').on('keyup', function () {
+            $('#barang_nama').on('keyup', function() {
                 clearTimeout(typingTimer);
                 typingTimer = setTimeout(function() {
                     tableBarang.ajax.reload();
                 }, 500);
             });
-            
+
             // Clear timeout ketika user masih mengetik
-            $('#barang_nama').on('keydown', function () {
+            $('#barang_nama').on('keydown', function() {
                 clearTimeout(typingTimer);
             });
         });
