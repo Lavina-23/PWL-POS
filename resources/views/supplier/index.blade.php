@@ -6,6 +6,8 @@
             <h3 class="card-title">{{ $page->title }}</h3>
             <div class="card-tools">
                 <a class="btn btn-sm btn-primary mt-1" href="{{ url('supplier/create') }}">Tambah</a>
+                <button onclick="modalAction('{{ url('supplier/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah
+                    Ajax</button>
             </div>
         </div>
         <div class="card-body">
@@ -50,6 +52,8 @@
             </table>
         </div>
     </div>
+    <div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static"
+        data-keyboard="false" data-width="75%" aria-hidden="true"></div>
 @endsection
 
 @push('css')
@@ -57,31 +61,66 @@
 
 @push('js')
     <script>
-        $(document).ready(function () {
-            var tableSupplier = $('#table_supplier').DataTable({
+        function modalAction(url = '') {
+            $('#myModal').load(url, function() {
+                $('#myModal').modal('show');
+            });
+        }
+
+        var tableSupplier;
+        $(document).ready(function() {
+            tableSupplier = $('#table_supplier').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
                     url: "{{ url('supplier/list') }}",
                     type: "POST",
-                    data: function (d) {
+                    data: function(d) {
                         d.supplier_kode = $('#supplier_kode').val(); // Filter berdasarkan supplier_kode
                         d._token = "{{ csrf_token() }}"; // Kirim CSRF token
                     }
                 },
-                columns: [
-                    { data: "DT_RowIndex", className: "text-center", orderable: false, searchable: false },
-                    { data: "supplier_kode", orderable: true, searchable: true },
-                    { data: "supplier_nama", orderable: true, searchable: true },
-                    { data: "supplier_telp", orderable: true, searchable: true },
-                    { data: "supplier_email", orderable: true, searchable: true },
-                    { data: "supplier_kontak", orderable: true, searchable: true },
-                    { data: "aksi", orderable: false, searchable: false }
+                columns: [{
+                        data: "DT_RowIndex",
+                        className: "text-center",
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: "supplier_kode",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "supplier_nama",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "supplier_telp",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "supplier_email",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "supplier_kontak",
+                        orderable: true,
+                        searchable: true
+                    },
+                    {
+                        data: "aksi",
+                        orderable: false,
+                        searchable: false
+                    }
                 ]
             });
 
             // Reload data ketika filter supplier_kode berubah
-            $('#supplier_kode').on('change', function () {
+            $('#supplier_kode').on('change', function() {
                 tableSupplier.ajax.reload();
             });
         });

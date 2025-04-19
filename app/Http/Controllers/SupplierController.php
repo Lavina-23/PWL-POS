@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SupplierModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
 class SupplierController extends Controller
@@ -17,16 +18,16 @@ class SupplierController extends Controller
             'title' => 'Daftar Supplier',
             'list' => ['Home', 'Supplier']
         ];
-    
+
         $page = (object) [
             'title' => 'Daftar supplier'
         ];
-    
+
         $activeMenu = 'supplier'; // Set menu yang sedang aktif
-        
+
         // Ambil semua supplier untuk dropdown filter
         $suppliers = SupplierModel::all();
-    
+
         return view('supplier.index', [
             'breadcrumb' => $breadcrumb,
             'page' => $page,
@@ -195,26 +196,137 @@ class SupplierController extends Controller
     public function list(Request $request)
     {
         $supplier = SupplierModel::query();
-        
+
         // Filter berdasarkan supplier_kode jika ada
         if ($request->has('supplier_kode') && $request->supplier_kode) {
             $supplier->where('supplier_kode', $request->supplier_kode);
         }
-    
+
         return DataTables::of($supplier)
             ->addIndexColumn() // Tambahkan nomor urut
-            ->addColumn('aksi', function ($supplier) {
-                // Tambahkan tombol aksi (Detail, Edit, Hapus)
-                $btn = '<a href="' . url("/supplier/{$supplier->supplier_id}") . '" class="btn btn-info btn-sm">Detail</a> ';
-                $btn .= '<a href="' . url("/supplier/{$supplier->supplier_id}/edit") . '" class="btn btn-warning btn-sm">Edit</a> ';
-                $btn .= '<form class="d-inline-block" method="POST" action="' . url("/supplier/{$supplier->supplier_id}") . '">'
-                    . csrf_field()
-                    . method_field('DELETE')
-                    . '<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm(\'Apakah Anda yakin menghapus data ini?\');">Hapus</button>'
-                    . '</form>';
+            ->addColumn('aksi', function ($supplier) {  // menambahkan kolom aksi
+                $btn  = '<button onclick="modalAction(\'' . url('/supplier/' . $supplier->supplier_id . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/supplier/' . $supplier->supplier_id . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/supplier/' . $supplier->supplier_id . '/delete_ajax') . '\')"  class="btn btn-danger btn-sm">Hapus</button> ';
+
                 return $btn;
             })
             ->rawColumns(['aksi']) // Pastikan kolom aksi dirender sebagai HTML
             ->make(true);
+    }
+
+    public function create_ajax()
+    {
+        return view('supplier.create_ajax');
+    }
+
+    public function store_ajax(Request $req)
+    {
+        if ($req->ajax() || $req->wantsJson()) {
+            $rules = [
+                'supplier_nama' => 'required|string|max:100',
+                'supplier_alamat' => 'required|string|max:255',
+                'supplier_telp' => 'required|string|max:15',
+                'supplier_email' => 'required|string|max:100|email',
+                'supplier_kontak' => 'required|string|max:50',
+            ];
+
+            $validator = Validator::make($req->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors()
+                ]);
+            }
+
+            $lastSupplier = SupplierModel::orderBy('supplier_id', 'desc')->first();
+            $lastKode = $lastSupplier ? intval(substr($lastSupplier->supplier_kode, 3)) : 0;
+            $newKode = 'SUP' . str_pad($lastKode + 1, 3, '0', STR_PAD_LEFT);
+
+            SupplierModel::create([
+                'supplier_kode' => $newKode,
+                'supplier_nama' => $req->supplier_nama,
+                'supplier_alamat' => $req->supplier_alamat,
+                'supplier_telp' => $req->supplier_telp,
+                'supplier_email' => $req->supplier_email,
+                'supplier_kontak' => $req->supplier_kontak,
+            ]);
+            return response()->json([
+                'status' => true,
+                'message' => 'Data Berhasil Disimpan'
+            ]);
+        }
+        redirect('/');
+    }
+
+    public function edit_ajax($id)
+    {
+        $supplier = SupplierModel::findOrFail($id);
+
+        return view('supplier.edit_ajax', [
+            'supplier' => $supplier
+        ]);
+    }
+
+    public function update_ajax(Request $req, $id)
+    {
+        if ($req->ajax() || $req->wantsJson()) {
+            $rules = [
+                'supplier_nama' => 'required|string|max:100',
+                'supplier_alamat' => 'required|string|max:255',
+                'supplier_telp' => 'required|string|max:15',
+                'supplier_email' => 'required|string|max:100|email',
+                'supplier_kontak' => 'required|string|max:50',
+            ];
+
+            $validator = Validator::make($req->all(), $rules);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors()
+                ]);
+            }
+
+            $supplier = SupplierModel::findOrFail($id);
+            $supplier->update([
+                'supplier_nama' => $req->supplier_nama,
+                'supplier_alamat' => $req->supplier_alamat,
+                'supplier_telp' => $req->supplier_telp,
+                'supplier_email' => $req->supplier_email,
+                'supplier_kontak' => $req->supplier_kontak,
+            ]);
+            return response()->json([
+                'status' => true,
+                'message' => 'Data Berhasil Diperbarui'
+            ]);
+        }
+        redirect('/');
+    }
+
+    public function confirm_ajax($id)
+    {
+        $supplier = SupplierModel::findOrFail($id);
+
+        return view('supplier.confirm_ajax', [
+            'supplier' => $supplier
+        ]);
+    }
+
+    public function delete_ajax($id)
+    {
+        if (request()->ajax()) {
+            $supplier = SupplierModel::findOrFail($id);
+            $supplier->delete();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Data Berhasil Dihapus'
+            ]);
+        }
+        redirect('/');
     }
 }

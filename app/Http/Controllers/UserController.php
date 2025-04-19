@@ -362,20 +362,3 @@ class UserController extends Controller
         return redirect('/');
     }
 }
-
-// NOTULEN
-// bocah kompak (rampal) dan rumbel jkjt (muharto)
-// kegiatannya baca buku bersama bocah2 + game
-// audiens = bocah2, pantek, volunteer dari luar poljar
-// tanggal = 18 mei 2025
-// partner = @dudukbaca, @bacabukumalang, @ejawantah
-// tempat = alun-alun (?)
-
-// YANG HARUS DITENTUKAN
-// partner
-// tempat
-// tema
-// anggaran (darimana duitnya)
-// konsumsi
-// mobilitas
-// merchandise

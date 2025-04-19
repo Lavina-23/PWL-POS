@@ -107,6 +107,12 @@ Route::group(['prefix' => 'supplier'], function () {
     Route::post('/list', [SupplierController::class, 'list']); // Mengambil data supplier untuk DataTables
     Route::get('/create', [SupplierController::class, 'create']); // Menampilkan form tambah supplier
     Route::post('/', [SupplierController::class, 'store']); // Menyimpan data supplier baru
+    Route::get('/create_ajax', [SupplierController::class, 'create_ajax']);
+    Route::post('/ajax', [SupplierController::class, 'store_ajax']);
+    Route::get('/{id}/edit_ajax', [SupplierController::class, 'edit_ajax']); //menampilkan halaman form edit user ajax
+    Route::put('/{id}/update_ajax', [SupplierController::class, 'update_ajax']); //menyimpan perubahan data user ajax
+    Route::get('/{id}/delete_ajax', [SupplierController::class, 'confirm_ajax']); //untuk menampilkan form confirm delete user ajax
+    Route::delete('/{id}/delete_ajax', [SupplierController::class, 'delete_ajax']); //menghapus data user ajax
     Route::get('/{id}', [SupplierController::class, 'show']); // Menampilkan detail supplier
     Route::get('/{id}/edit', [SupplierController::class, 'edit']); // Menampilkan form edit supplier
     Route::put('/{id}', [SupplierController::class, 'update']); // Menyimpan perubahan supplier
